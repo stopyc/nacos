@@ -22,9 +22,9 @@ import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory;
-import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -58,6 +58,15 @@ public class RabbitMqConfig {
      */
     public static final String DLX_QUEUE_NAME = "dlx_queue";
 
+    @Value("${RABBIT_HOST}")
+    private String rabbitMqHost;
+
+    @Value("${RABBIT_USERNAME}")
+    private String rabbitMqUsername;
+
+    @Value("${RABBIT_PASSWORD}")
+    private String rabbitMqPassword;
+
 
     /**
      * 回调
@@ -82,9 +91,9 @@ public class RabbitMqConfig {
     @Bean
     public ConnectionFactory myConnectionFactory () {
         CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
-        connectionFactory.setHost("47.113.216.82");
-        connectionFactory.setPassword("guest");
-        connectionFactory.setUsername("guest");
+        connectionFactory.setHost(rabbitMqHost);
+        connectionFactory.setPassword(rabbitMqUsername);
+        connectionFactory.setUsername(rabbitMqPassword);
         connectionFactory.setPort(5672);
         connectionFactory.setVirtualHost("/");
         connectionFactory.setPublisherReturns(true);

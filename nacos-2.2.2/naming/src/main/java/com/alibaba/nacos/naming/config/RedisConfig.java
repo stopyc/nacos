@@ -16,10 +16,6 @@
 package com.alibaba.nacos.naming.config;
 
 import com.alibaba.fastjson.support.spring.FastJsonRedisSerializer;
-import com.alibaba.nacos.sys.env.EnvUtil;
-import io.lettuce.core.cluster.ClusterClientOptions;
-import io.lettuce.core.cluster.ClusterTopologyRefreshOptions;
-import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.cache.CacheProperties;
@@ -27,27 +23,13 @@ import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cache.interceptor.CacheErrorHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.connection.RedisNode;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
-import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
-import org.springframework.data.redis.connection.lettuce.LettucePoolingClientConfiguration;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.listener.RedisMessageListenerContainer;
-import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
-
-import java.time.Duration;
-import java.util.HashSet;
-import java.util.Set;
-
-import static com.alibaba.nacos.naming.constants.ClientConstants.A_U;
 
 /**
  * @author :
@@ -62,8 +44,12 @@ public class RedisConfig extends CachingConfigurerSupport {
     @Autowired
     private RedisProperties redisProperties;
 
-    @Value(("${JAVA_HOME}"))
-    private String aa;
+
+    @Value("${REDIS_HOST}")
+    private String redisHost;
+
+    @Value("${REDIS_PASSWORD}")
+    private String redisPassword;
 
     /**
      * 连接工厂
@@ -71,10 +57,9 @@ public class RedisConfig extends CachingConfigurerSupport {
      */
     @Bean
     public RedisConnectionFactory connectionFactory() {
-        System.out.println("aa = " + aa);
         RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
-        config.setHostName("39.101.69.31");
-        config.setPassword("@YC104qwe");
+        config.setHostName(redisHost);
+        config.setPassword(redisPassword);
         config.setPort(6379);
         config.setDatabase(2);
         LettuceConnectionFactory factory = new LettuceConnectionFactory(config);
