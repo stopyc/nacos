@@ -34,6 +34,10 @@ import com.alibaba.nacos.naming.misc.Loggers;
 import com.alibaba.nacos.naming.misc.UtilsAndCommons;
 import com.alibaba.nacos.naming.monitor.MetricsMonitor;
 import com.alibaba.nacos.naming.utils.HashUtils;
+import com.alibaba.nacos.naming.utils.nacos_hashring.AbstractHashRing;
+import com.alibaba.nacos.naming.utils.nacos_hashring.MessageQueue;
+import com.alibaba.nacos.naming.utils.nacos_hashring.support.strategy.ServiceUpdateStrategy;
+import com.alibaba.nacos.naming.utils.nacos_hashring.template.AbstractHashRingTemplate;
 import com.alibaba.nacos.naming.web.CanDistro;
 import com.alibaba.nacos.plugin.auth.constant.ActionTypes;
 import com.alibaba.nacos.sys.env.EnvUtil;
@@ -73,7 +77,7 @@ public class HealthController {
     private HealthOperatorV2Impl healthOperatorV2;
 
     @Resource
-    private HashUtils hashUtils;
+    private MessageQueue messageQueue;
     
     /**
      * Just a health check.
@@ -115,7 +119,11 @@ public class HealthController {
         getHealthOperator()
                 .updateHealthStatusForPersistentInstance(namespaceId, serviceName, clusterName, ip, port, health);
 
-        hashUtils.updateHashRing(serviceName, namespaceId,  ip, port, health, health ? true: false);
+        //hashUtils.updateHashRing(serviceName, namespaceId,  ip, port, health, health ? true: false);
+        AbstractHashRingTemplate serviceUpdateStrategy = ServiceUpdateStrategy
+                .newInstance(messageQueue);
+        serviceUpdateStrategy
+                .updateHashRing2Cache(namespaceId, serviceName, ip, port, health, health);
 
         return ResponseEntity.ok("ok");
     }
