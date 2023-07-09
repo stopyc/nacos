@@ -19,7 +19,6 @@ package com.alibaba.nacos.naming.controllers;
 import com.alibaba.nacos.api.common.Constants;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.CommonParams;
-import com.alibaba.nacos.api.naming.pojo.Instance;
 import com.alibaba.nacos.api.naming.pojo.healthcheck.AbstractHealthChecker;
 import com.alibaba.nacos.api.naming.pojo.healthcheck.HealthCheckType;
 import com.alibaba.nacos.auth.annotation.Secured;
@@ -29,21 +28,17 @@ import com.alibaba.nacos.common.utils.StringUtils;
 import com.alibaba.nacos.core.utils.WebUtils;
 import com.alibaba.nacos.naming.core.HealthOperator;
 import com.alibaba.nacos.naming.core.HealthOperatorV2Impl;
-import com.alibaba.nacos.naming.core.InstanceOperatorClientImpl;
 import com.alibaba.nacos.naming.misc.Loggers;
 import com.alibaba.nacos.naming.misc.UtilsAndCommons;
 import com.alibaba.nacos.naming.monitor.MetricsMonitor;
-import com.alibaba.nacos.naming.utils.HashUtils;
-import com.alibaba.nacos.naming.utils.nacos_hashring.AbstractHashRing;
-import com.alibaba.nacos.naming.utils.nacos_hashring.MessageQueue;
-import com.alibaba.nacos.naming.utils.nacos_hashring.support.strategy.ServiceUpdateStrategy;
-import com.alibaba.nacos.naming.utils.nacos_hashring.template.AbstractHashRingTemplate;
+import com.alibaba.nacos.naming.utils.nacoshashring.MessageQueue;
+import com.alibaba.nacos.naming.utils.nacoshashring.support.strategy.ServiceUpdateStrategy;
+import com.alibaba.nacos.naming.utils.nacoshashring.template.AbstractHashRingTemplate;
 import com.alibaba.nacos.naming.web.CanDistro;
 import com.alibaba.nacos.plugin.auth.constant.ActionTypes;
 import com.alibaba.nacos.sys.env.EnvUtil;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -55,7 +50,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
 
 import static com.alibaba.nacos.naming.constants.RequestConstant.HEALTHY_KEY;
 import static com.alibaba.nacos.naming.constants.RequestConstant.IP_KEY;
@@ -119,7 +113,6 @@ public class HealthController {
         getHealthOperator()
                 .updateHealthStatusForPersistentInstance(namespaceId, serviceName, clusterName, ip, port, health);
 
-        //hashUtils.updateHashRing(serviceName, namespaceId,  ip, port, health, health ? true: false);
         AbstractHashRingTemplate serviceUpdateStrategy = ServiceUpdateStrategy
                 .newInstance(messageQueue);
         serviceUpdateStrategy

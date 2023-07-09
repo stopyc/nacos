@@ -44,12 +44,11 @@ import com.alibaba.nacos.naming.pojo.Subscriber;
 import com.alibaba.nacos.naming.pojo.instance.BeatInfoInstanceBuilder;
 import com.alibaba.nacos.naming.pojo.instance.HttpRequestInstanceBuilder;
 import com.alibaba.nacos.naming.pojo.instance.InstanceExtensionHandler;
-import com.alibaba.nacos.naming.utils.HashUtils;
-import com.alibaba.nacos.naming.utils.nacos_hashring.MessageQueue;
-import com.alibaba.nacos.naming.utils.nacos_hashring.support.strategy.ServiceDeregisterStrategy;
-import com.alibaba.nacos.naming.utils.nacos_hashring.support.strategy.ServiceRegisterStrategy;
-import com.alibaba.nacos.naming.utils.nacos_hashring.support.strategy.ServiceUpdateStrategy;
-import com.alibaba.nacos.naming.utils.nacos_hashring.template.AbstractHashRingTemplate;
+import com.alibaba.nacos.naming.utils.nacoshashring.MessageQueue;
+import com.alibaba.nacos.naming.utils.nacoshashring.support.strategy.ServiceDeregisterStrategy;
+import com.alibaba.nacos.naming.utils.nacoshashring.support.strategy.ServiceRegisterStrategy;
+import com.alibaba.nacos.naming.utils.nacoshashring.support.strategy.ServiceUpdateStrategy;
+import com.alibaba.nacos.naming.utils.nacoshashring.template.AbstractHashRingTemplate;
 import com.alibaba.nacos.naming.web.CanDistro;
 import com.alibaba.nacos.plugin.auth.constant.ActionTypes;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -57,7 +56,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -124,7 +122,6 @@ public class InstanceController {
                 NamingUtils.getGroupName(serviceName), NamingUtils.getServiceName(serviceName), instance.getIp(),
                 instance.getPort()));
 
-        //hashUtils.updateHashRingIsRegister(namespaceId, serviceName, instance.getIp(), instance.getPort(), instance.isHealthy(), instance.isEnabled());
         AbstractHashRingTemplate serviceRegisterStrategy = ServiceRegisterStrategy
                 .newInstance(messageQueue);
         serviceRegisterStrategy
@@ -157,7 +154,6 @@ public class InstanceController {
                 NamingUtils.getServiceName(serviceName), instance.getIp(), instance.getPort()));
 
 
-        //hashUtils.updateHashRingByDeregister(namespaceId, serviceName, instance.getIp(), instance.getPort(), instance.isHealthy(), instance.isEnabled());
         AbstractHashRingTemplate serviceDeregisterStrategy = ServiceDeregisterStrategy
                 .newInstance(messageQueue);
         serviceDeregisterStrategy
@@ -184,7 +180,6 @@ public class InstanceController {
                 .setDefaultInstanceEphemeral(switchDomain.isDefaultInstanceEphemeral()).setRequest(request).build();
         getInstanceOperator().updateInstance(namespaceId, serviceName, instance);
 
-        //hashUtils.updateHashRing(namespaceId, serviceName, instance.getIp(), instance.getPort(), instance.isHealthy(), instance.isEnabled());
         AbstractHashRingTemplate serviceUpdateStrategy = ServiceUpdateStrategy
                 .newInstance(messageQueue);
         serviceUpdateStrategy
