@@ -79,7 +79,7 @@ public abstract class AbstractHashRingTemplate {
      * @return: true or false
      */
     private boolean isCorresponding(String serviceName) {
-        return SERVICE_NAME.equals(serviceName);
+        return serviceName.contains(SERVICE_NAME);
     }
 
     /**
